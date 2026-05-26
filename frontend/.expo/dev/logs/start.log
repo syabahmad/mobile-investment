@@ -424,3 +424,106 @@
 {"_e":"metro:bundling:progress","_t":1779731542108,"id":"1","progress":0.999,"total":1030,"current":1030}
 {"_e":"metro:bundling:done","_t":1779731542214,"id":"1","total":1030,"ms":2237.8404}
 {"_e":"metro:client_log","_t":1779731546404,"level":"warn","data":["SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/AppAndFlow/react-native-safe-area-context"]}
+{"_e":"metro:bundling:started","_t":1779734859976,"id":"4","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1779734859976,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1779734860043,"id":"4","total":1,"ms":67.193}
+{"_e":"metro:client_log","_t":1779734862826,"level":"warn","data":["SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/AppAndFlow/react-native-safe-area-context"]}
+{"_e":"metro:client_log","_t":1779734982131,"level":"error","data":["[ReferenceError: Property 'TermsAndConditionsScreen' doesn't exist]"]}
+{"_e":"metro:bundling:started","_t":1779735014133,"id":"8","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1779735014133,"id":"8","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1779735014222,"id":"8","total":1,"ms":89.0065}
+{"_e":"metro:client_log","_t":1779735017564,"level":"warn","data":["SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/AppAndFlow/react-native-safe-area-context"]}
+{"_e":"metro:bundling:failed","_t":1779739652667,"id":null,"message":"SyntaxError: D:\\projects\\Invesment App\\frontend\\src\\screens\\PlanSelectionScreen.tsx: Unexpected token (279:15)\n\n  277 |   },\n  278 | });\n> 279 |               </View>\n      |                ^\n  280 |\n  281 |               <Text style={styles.planDescription}>{plan.description}</Text>\n  282 |","importStack":null,"filename":"src\\screens\\PlanSelectionScreen.tsx","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:failed","_t":1779739668419,"id":null,"message":"SyntaxError: D:\\projects\\Invesment App\\frontend\\src\\screens\\PlanSelectionScreen.tsx: Unexpected token (279:15)\n\n  277 |   },\n  278 | });\n> 279 |               </View>\n      |                ^\n  280 |\n  281 |               <Text style={styles.planDescription}>{plan.description}</Text>\n  282 |","importStack":null,"filename":"src\\screens\\PlanSelectionScreen.tsx","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:failed","_t":1779739681031,"id":null,"message":"SyntaxError: D:\\projects\\Invesment App\\frontend\\src\\screens\\PlanSelectionScreen.tsx: Unexpected token (279:15)\n\n  277 |   },\n  278 | });\n> 279 |               </View>\n      |                ^\n  280 |\n  281 |               <Text style={styles.planDescription}>{plan.description}</Text>\n  282 |","importStack":null,"filename":"src\\screens\\PlanSelectionScreen.tsx","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:failed","_t":1779739701655,"id":null,"message":"SyntaxError: D:\\projects\\Invesment App\\frontend\\src\\screens\\PlanSelectionScreen.tsx: Unexpected token (279:15)\n\n  277 |   },\n  278 | });\n> 279 |               </View>\n      |                ^\n  280 |\n  281 |               <Text style={styles.planDescription}>{plan.description}</Text>\n  282 |","importStack":null,"filename":"src\\screens\\PlanSelectionScreen.tsx","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:failed","_t":1779739719494,"id":null,"message":"SyntaxError: D:\\projects\\Invesment App\\frontend\\src\\screens\\PlanSelectionScreen.tsx: Unexpected token (279:15)\n\n  277 |   },\n  278 | });\n> 279 |               </View>\n      |                ^\n  280 |\n  281 |               <Text style={styles.planDescription}>{plan.description}</Text>\n  282 |","importStack":null,"filename":"src\\screens\\PlanSelectionScreen.tsx","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:failed","_t":1779739772180,"id":null,"message":"SyntaxError: D:\\projects\\Invesment App\\frontend\\src\\screens\\PlanSelectionScreen.tsx: Missing semicolon. (280:16)\n\n  278 | });\n  279 |     shadowColor: '#0F172A',\n> 280 |     shadowOffset: { width: 0, height: 2 },\n      |                 ^\n  281 |     shadowOpacity: 0.06,\n  282 |     shadowRadius: 8,\n  283 |     elevation: 2,","importStack":null,"filename":"src\\screens\\PlanSelectionScreen.tsx","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:failed","_t":1779739779189,"id":null,"message":"SyntaxError: D:\\projects\\Invesment App\\frontend\\src\\screens\\PlanSelectionScreen.tsx: Missing semicolon. (280:16)\n\n  278 | });\n  279 |     shadowColor: '#0F172A',\n> 280 |     shadowOffset: { width: 0, height: 2 },\n      |                 ^\n  281 |     shadowOpacity: 0.06,\n  282 |     shadowRadius: 8,\n  283 |     elevation: 2,","importStack":null,"filename":"src\\screens\\PlanSelectionScreen.tsx","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:failed","_t":1779739791805,"id":null,"message":"SyntaxError: D:\\projects\\Invesment App\\frontend\\src\\screens\\PlanSelectionScreen.tsx: Missing semicolon. (280:16)\n\n  278 | });\n  279 |     shadowColor: '#0F172A',\n> 280 |     shadowOffset: { width: 0, height: 2 },\n      |                 ^\n  281 |     shadowOpacity: 0.06,\n  282 |     shadowRadius: 8,\n  283 |     elevation: 2,","importStack":null,"filename":"src\\screens\\PlanSelectionScreen.tsx","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:failed","_t":1779740085553,"id":null,"message":"Unable to resolve \"../screens/AnalysisScreen\" from \"src\\navigation\\AppNavigator.tsx\"\n   8 | import TermsAndConditionsScreen from '../screens/TermsAndConditionsScreen';\n   9 | import DashboardScreen from '../screens/DashboardScreen';\n> 10 | import AnalysisScreen from '../screens/AnalysisScreen';\n     |                             ^\n  11 |\n  12 | type AppStackParamList = {\n  13 |   Login: undefined;","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc\\navigation\\AppNavigator.tsx\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../screens/AnalysisScreen\"\u001b[39m\n\n\u001b[90m \u001b[39m\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/navigation/AppNavigator\"\u001b[39m\n","filename":null,"targetModuleName":"../screens/AnalysisScreen","originModulePath":"src\\navigation\\AppNavigator.tsx"}
+{"_e":"root:init","_t":1779740147525,"format":"v0-jsonl","version":"56.1.11"}
+{"_e":"env:mode","_t":1779740147526,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1779740147531,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1779740160150,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1779740160619,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1779740167165,"atlas":false,"workers":6,"host":"::","port":8082}
+{"_e":"metro:bundling:started","_t":1779740171337,"id":"1","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1779740171337,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1779740171342,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1779740171442,"id":"1","progress":0.01673225910249746,"total":201,"current":26}
+{"_e":"metro:bundling:progress","_t":1779740171542,"id":"1","progress":0.14954226412683344,"total":331,"current":128}
+{"_e":"metro:bundling:progress","_t":1779740171642,"id":"1","progress":0.25,"total":412,"current":206}
+{"_e":"metro:bundling:progress","_t":1779740171743,"id":"1","progress":0.34202652579073395,"total":501,"current":293}
+{"_e":"metro:bundling:progress","_t":1779740171843,"id":"1","progress":0.4110284208864985,"total":574,"current":368}
+{"_e":"metro:bundling:progress","_t":1779740171947,"id":"1","progress":0.46137415450338193,"total":636,"current":432}
+{"_e":"metro:bundling:progress","_t":1779740172046,"id":"1","progress":0.5856934610578924,"total":686,"current":525}
+{"_e":"metro:bundling:progress","_t":1779740172147,"id":"1","progress":0.6628746175183735,"total":748,"current":609}
+{"_e":"metro:bundling:progress","_t":1779740172247,"id":"1","progress":0.8172335748210987,"total":823,"current":744}
+{"_e":"metro:bundling:progress","_t":1779740172359,"id":"1","progress":0.827429267858178,"total":841,"current":765}
+{"_e":"metro:bundling:progress","_t":1779740172459,"id":"1","progress":0.9163920443298635,"total":913,"current":874}
+{"_e":"metro:bundling:progress","_t":1779740172559,"id":"1","progress":0.9395303861904668,"total":977,"current":947}
+{"_e":"metro:bundling:progress","_t":1779740172660,"id":"1","progress":0.9961051643620638,"total":1026,"current":1024}
+{"_e":"metro:bundling:done","_t":1779740172795,"id":"1","total":1026,"ms":1458.1605}
+{"_e":"metro:client_log","_t":1779740176604,"level":"warn","data":["SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/AppAndFlow/react-native-safe-area-context"]}
+{"_e":"metro:bundling:started","_t":1779740711026,"id":"4","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1779740711027,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1779740711089,"id":"4","total":1,"ms":62.0094}
+{"_e":"metro:client_log","_t":1779740714529,"level":"warn","data":["SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/AppAndFlow/react-native-safe-area-context"]}
+{"_e":"metro:bundling:failed","_t":1779741047860,"id":null,"message":"Unable to resolve \"../screens/DashboardScreen\" from \"src\\navigation\\AppNavigator.tsx\"\n   7 | import PlanSelectionScreen from '../screens/PlanSelectionScreen';\n   8 | import TermsAndConditionsScreen from '../screens/TermsAndConditionsScreen';\n>  9 | import DashboardScreen from '../screens/DashboardScreen';\n     |                              ^\n  10 | import AnalysisScreen from '../screens/AnalysisScreen';\n  11 |\n  12 | type AppStackParamList = {","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc\\navigation\\AppNavigator.tsx\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"../screens/DashboardScreen\"\u001b[39m\n\n\u001b[90m \u001b[39mApp.tsx\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/navigation/AppNavigator\"\u001b[39m\n\n\u001b[90m \u001b[39mindex.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./App\"\u001b[39m\n\n\u001b[90m \u001b[39m\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./index\"\u001b[39m\n","filename":null,"targetModuleName":"../screens/DashboardScreen","originModulePath":"src\\navigation\\AppNavigator.tsx"}
+{"_e":"metro:client_log","_t":1779741086024,"level":"error","data":["[Error: Got an invalid value for 'component' prop for the screen 'Dashboard'. It must be a valid React Component.]"]}
+{"_e":"root:init","_t":1779741125081,"format":"v0-jsonl","version":"56.1.11"}
+{"_e":"env:mode","_t":1779741125083,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1779741125087,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1779741125396,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1779741125802,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1779741132625,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"root:init","_t":1779741250588,"format":"v0-jsonl","version":"56.1.11"}
+{"_e":"env:mode","_t":1779741250589,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1779741250592,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1779741250873,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1779741251310,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"metro:instantiate","_t":1779741257536,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1779741282706,"id":"1","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1779741282707,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1779741282712,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1779741282822,"id":"1","progress":0.021626297577854673,"total":102,"current":15}
+{"_e":"metro:bundling:progress","_t":1779741282940,"id":"1","progress":0.0929506246281975,"total":246,"current":75}
+{"_e":"metro:bundling:progress","_t":1779741283021,"id":"1","progress":0.10143788703321449,"total":292,"current":93}
+{"_e":"metro:bundling:progress","_t":1779741283122,"id":"1","progress":0.21497980540323236,"total":399,"current":185}
+{"_e":"metro:bundling:progress","_t":1779741283227,"id":"1","progress":0.34738170687931574,"total":509,"current":300}
+{"_e":"metro:bundling:progress","_t":1779741283327,"id":"1","progress":0.40404671158037203,"total":634,"current":403}
+{"_e":"metro:bundling:progress","_t":1779741283428,"id":"1","progress":0.5642084272625328,"total":659,"current":495}
+{"_e":"metro:bundling:progress","_t":1779741283527,"id":"1","progress":0.6861612449924835,"total":769,"current":637}
+{"_e":"metro:bundling:progress","_t":1779741283628,"id":"1","progress":0.829979356897709,"total":843,"current":768}
+{"_e":"metro:bundling:progress","_t":1779741283727,"id":"1","progress":0.8927853799129398,"total":907,"current":857}
+{"_e":"metro:bundling:progress","_t":1779741283828,"id":"1","progress":0.9373935314554028,"total":1006,"current":974}
+{"_e":"metro:bundling:done","_t":1779741283957,"id":"1","total":1006,"ms":1250.6855}
+{"_e":"metro:client_log","_t":1779741286902,"level":"warn","data":["SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/AppAndFlow/react-native-safe-area-context"]}
+{"_e":"metro:bundling:started","_t":1779742142799,"id":"3","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1779742142799,"id":"3","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1779742142866,"id":"3","total":1,"ms":67.5009}
+{"_e":"metro:client_log","_t":1779742146034,"level":"warn","data":["SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/AppAndFlow/react-native-safe-area-context"]}
+{"_e":"metro:client_log","_t":1779742499388,"level":"error","data":["The action 'NAVIGATE' with payload {\"name\":\"TermsAndConditions\",\"params\":{\"plan\":{\"id\":\"plan-b\",\"name\":\"Plan B\",\"dailyProfit\":\"3.5% Daily\",\"description\":\"Balanced growth strategy with moderate returns\",\"features\":[\"Balanced risk profile\",\"Higher daily returns\",\"Priority support\"],\"color\":\"#8B5CF6\"}}} was not handled by any navigator.\n\nDo you have a screen named 'TermsAndConditions'?\n\nIf you're trying to navigate to a screen in a nested navigator, see https://reactnavigation.org/docs/nesting-navigators#navigating-to-a-screen-in-a-nested-navigator.\n\nIf you're using conditional rendering, navigation will happen automatically and you shouldn't navigate manually, see.\n\nThis is a development-only warning and won't be shown in production."]}
+{"_e":"metro:client_log","_t":1779742533902,"level":"error","data":["[ReferenceError: Property 'plan' doesn't exist]"]}
+{"_e":"metro:client_log","_t":1779743311660,"level":"error","data":["[TypeError: Cannot read property 'forEach' of null]"]}
+{"_e":"metro:bundling:started","_t":1779743328368,"id":"b","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1779743328369,"id":"b","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1779743328439,"id":"b","total":1,"ms":70.0573}
+{"_e":"metro:client_log","_t":1779743331888,"level":"warn","data":["SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/AppAndFlow/react-native-safe-area-context"]}
+{"_e":"metro:client_log","_t":1779743365166,"level":"error","data":["[TypeError: Cannot read property 'forEach' of null]"]}
+{"_e":"metro:bundling:started","_t":1779743486157,"id":"h","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1779743486157,"id":"h","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1779743486220,"id":"h","total":1,"ms":62.4066}
+{"_e":"metro:client_log","_t":1779743489480,"level":"warn","data":["SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/AppAndFlow/react-native-safe-area-context"]}
+{"_e":"metro:client_log","_t":1779743520656,"level":"error","data":["[TypeError: Cannot read property 'forEach' of null]"]}
+{"_e":"metro:bundling:started","_t":1779743604809,"id":"l","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1779743604809,"id":"l","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1779743604891,"id":"l","total":1,"ms":81.8591}
+{"_e":"metro:client_log","_t":1779743609096,"level":"warn","data":["SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/AppAndFlow/react-native-safe-area-context"]}
+{"_e":"metro:server_log","_t":1779754473573,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","host.exp.exponent","sdk_gphone16k_x86_64 - 17 - API 37","60"]}
+{"_e":"metro:server_log","_t":1779754473574,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","host.exp.exponent","sdk_gphone16k_x86_64 - 17 - API 37","60"]}
+{"_e":"metro:server_log","_t":1779754473574,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","host.exp.exponent","sdk_gphone16k_x86_64 - 17 - API 37","60"]}
+{"_e":"metro:server_log","_t":1779754473574,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","host.exp.exponent","sdk_gphone16k_x86_64 - 17 - API 37","60"]}
+{"_e":"metro:server_log","_t":1779754473574,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","host.exp.exponent","sdk_gphone16k_x86_64 - 17 - API 37","60"]}
+{"_e":"metro:server_log","_t":1779754473575,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","host.exp.exponent","sdk_gphone16k_x86_64 - 17 - API 37","60"]}

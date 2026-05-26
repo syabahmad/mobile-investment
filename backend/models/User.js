@@ -38,6 +38,7 @@ const userSchema = new mongoose.Schema(
 		currentBalance: {
 			type: Number,
 			default: 0,
+			min: [0, 'Balance cannot drop below zero'],
 		},
 		activePlan: {
 			type: String,

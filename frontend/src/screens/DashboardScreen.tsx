@@ -1,19 +1,25 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
+  Modal,
   Pressable,
   RefreshControl,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { AxiosError } from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import SuccessModal from '../components/SuccessModal';
+import ErrorModal from '../components/ErrorModal';
+import ConfirmationModal from '../components/ConfirmationModal';
+import InfoModal from '../components/InfoModal';
 
 interface UserProfileResponse {
   user: {
@@ -41,11 +47,12 @@ interface DashboardData {
 }
 
 interface ApiError {
-  message?: string;
+  message: string;
 }
 
 export default function DashboardScreen() {
   const { userData, logout } = useAuth();
+  const navigation = useNavigation();
   const [dashboardData, setDashboardData] = useState<DashboardData>({
     user: null,
     stats: null,
@@ -53,6 +60,23 @@ export default function DashboardScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Balance visibility and PIN state
+  const [showBalance, setShowBalance] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pinCodeInput, setPinCodeInput] = useState('');
+
+  // Modal states
+  const [successModal, setSuccessModal] = useState({ visible: false, title: '', message: '' });
+  const [errorModal, setErrorModal] = useState({ visible: false, title: '', message: '' });
+  const [confirmModal, setConfirmModal] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    isDangerous: false,
+    onConfirm: () => {},
+  });
+  const [infoModal, setInfoModal] = useState({ visible: false, title: '', message: '', icon: '🎯', isComingSoon: false });
 
   const fetchDashboardData = useCallback(async () => {
     try {
@@ -71,7 +95,11 @@ export default function DashboardScreen() {
       const axiosError = err as AxiosError<ApiError>;
       const errorMessage = axiosError.response?.data?.message || 'Failed to load dashboard data';
       setError(errorMessage);
-      Alert.alert('Error', errorMessage);
+      setErrorModal({
+        visible: true,
+        title: 'Failed to Load Dashboard',
+        message: errorMessage,
+      });
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -88,28 +116,63 @@ export default function DashboardScreen() {
   }, [fetchDashboardData]);
 
   const handleLogout = async () => {
-    Alert.alert('Logout', 'Are you sure you want to log out?', [
-      { text: 'Cancel', onPress: () => {}, style: 'cancel' },
-      {
-        text: 'Logout',
-        onPress: async () => {
-          try {
-            await logout();
-          } catch (error) {
-            console.error('Logout error:', error);
-            Alert.alert('Error', 'Failed to logout. Please try again.');
-          }
-        },
-        style: 'destructive',
+    setConfirmModal({
+      visible: true,
+      title: 'Log Out?',
+      message: 'Are you sure you want to log out of your account?',
+      isDangerous: true,
+      onConfirm: async () => {
+        setConfirmModal({ ...confirmModal, visible: false });
+        try {
+          await logout();
+          // Use reset to completely clear the navigation state and go back to Login
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' as never }],
+          });
+        } catch (error) {
+          console.error('Logout error:', error);
+          setErrorModal({
+            visible: true,
+            title: 'Logout Failed',
+            message: 'Unable to log out. Please try again.',
+          });
+        }
       },
-    ]);
+    });
+  };
+
+  const handleBalanceToggle = () => {
+    setShowPinModal(true);
+    setPinCodeInput('');
+  };
+
+  const handlePinSubmit = () => {
+    const CORRECT_PIN = '0000';
+    if (pinCodeInput === CORRECT_PIN) {
+      setShowBalance(!showBalance);
+      setShowPinModal(false);
+      setPinCodeInput('');
+      setSuccessModal({
+        visible: true,
+        title: 'Balance Updated',
+        message: `Your balance is now ${!showBalance ? 'visible' : 'hidden'}.`,
+      });
+    } else {
+      setErrorModal({
+        visible: true,
+        title: 'Incorrect PIN',
+        message: 'The PIN you entered is incorrect. Please try again.',
+      });
+      setPinCodeInput('');
+    }
   };
 
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0EA5E9" />
+          <ActivityIndicator size="large" color="#00A86B" />
           <Text style={styles.loadingText}>Loading your dashboard...</Text>
         </View>
       </SafeAreaView>
@@ -123,6 +186,13 @@ export default function DashboardScreen() {
     totalROIEarnings: 0,
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
   const formatCurrency = (amount: number) => {
     return `Rs. ${amount.toLocaleString('en-PK', {
       minimumFractionDigits: 2,
@@ -130,94 +200,220 @@ export default function DashboardScreen() {
     })}`;
   };
 
+  const balanceDisplay = showBalance ? formatCurrency(user?.currentBalance || 0) : 'Rs. ••••••';
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header with Logout */}
-      <View style={styles.header}>
+      {/* Header with Green Background */}
+      <View style={styles.headerGreen}>
         <View style={styles.headerContent}>
-          <Text style={styles.headerTitle}>Dashboard</Text>
+          <Text style={styles.greetingText}>{getGreeting()}</Text>
+          <Text style={styles.userNameText}>{user?.name || 'User'}</Text>
         </View>
-        <Pressable style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Logout</Text>
+        <Pressable style={styles.headerIcon} onPress={handleLogout} hitSlop={15}>
+          <Text style={styles.logoutIcon}>⎋</Text>
         </Pressable>
       </View>
 
       <ScrollView
         style={styles.scrollContent}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0EA5E9']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#00A86B']} />}
       >
-        {/* Welcome Section */}
-        <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeTitle}>Welcome Back, {user?.name || 'User'}</Text>
-          <Text style={styles.welcomeSubtitle}>
-            Active: <Text style={styles.activePlanText}>{user?.activePlan || 'No Plan'}</Text>
-          </Text>
-        </View>
+        {/* Floating Wallet Card */}
+        <View style={styles.walletCardContainer}>
+          <View style={styles.walletCard}>
+            <View style={styles.walletCardLeft}>
+              <Text style={styles.walletLabel}>Wallet Balance</Text>
+              <Text style={styles.walletAmount}>{balanceDisplay}</Text>
+              <Text style={styles.walletSubtext}>Your current funds</Text>
+            </View>
 
-        {/* Main Wallet Card */}
-        <View style={styles.walletCard}>
-          <Text style={styles.walletLabel}>Available Balance</Text>
-          <Text style={styles.walletAmount}>{formatCurrency(user?.currentBalance || 0)}</Text>
-          <View style={styles.walletFooter}>
-            <Text style={styles.walletFooterText}>Your current spending balance</Text>
+            <View style={styles.walletCardDivider} />
+
+            <View style={styles.walletCardRight}>
+              <Pressable style={styles.eyeButtonContainer} onPress={handleBalanceToggle}>
+                <Text style={styles.eyeButton}>{showBalance ? '👁' : '🔒'}</Text>
+              </Pressable>
+              <Pressable style={styles.addMoneyButton} onPress={() => setInfoModal({ visible: true, title: 'Deposit Funds', message: 'This feature is coming soon. You\'ll be able to deposit funds to your wallet soon.', icon: '💳', isComingSoon: true })}>
+                <Text style={styles.addMoneyText}>Add Money</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
 
-        {/* Stats Grid */}
-        <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>Ledger Summary</Text>
-          <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <Text style={styles.statLabel}>Total Invested</Text>
-              <Text style={styles.statValue}>{formatCurrency(stats.totalDepositsApproved)}</Text>
+        {/* Financial Analytics Grid */}
+        <View style={styles.analyticsSection}>
+          <Text style={styles.sectionTitle}>Financial Analytics</Text>
+          <View style={styles.analyticsGrid}>
+            {/* ROI Card */}
+            <View style={styles.analyticsCard}>
+              <Text style={styles.analyticsLabel}>Total ROI Profit</Text>
+              <Text style={[styles.analyticsValue, styles.roiColor]}>
+                {formatCurrency(stats.totalROIEarnings)}
+              </Text>
+              <View style={styles.analyticsIndicator} />
             </View>
 
-            <View style={styles.statCard}>
-              <Text style={styles.statLabel}>ROI Earned</Text>
-              <Text style={[styles.statValue, styles.roiValue]}>{formatCurrency(stats.totalROIEarnings)}</Text>
+            {/* Deposited Card */}
+            <View style={styles.analyticsCard}>
+              <Text style={styles.analyticsLabel}>Total Deposited</Text>
+              <Text style={[styles.analyticsValue, styles.depositColor]}>
+                {formatCurrency(stats.totalDepositsApproved)}
+              </Text>
+              <View style={[styles.analyticsIndicator, { backgroundColor: '#0EA5E9' }]} />
             </View>
 
-            <View style={[styles.statCard, { gridColumn: 1 }]}>
-              <Text style={styles.statLabel}>Total Withdrawn</Text>
-              <Text style={styles.statValue}>{formatCurrency(stats.totalWithdrawalsApproved)}</Text>
+            {/* Withdrawn Card */}
+            <View style={styles.analyticsCard}>
+              <Text style={styles.analyticsLabel}>Total Withdrawn</Text>
+              <Text style={[styles.analyticsValue, styles.withdrawColor]}>
+                {formatCurrency(stats.totalWithdrawalsApproved)}
+              </Text>
+              <View style={[styles.analyticsIndicator, { backgroundColor: '#F59E0B' }]} />
             </View>
+          </View>
+        </View>
 
-            <View style={styles.statCard}>
-              <Text style={styles.statLabel}>Net Balance</Text>
-              <Text style={styles.statValue}>
-                {formatCurrency(stats.totalDepositsApproved + stats.totalROIEarnings - stats.totalWithdrawalsApproved)}
+        {/* Quick Actions Grid */}
+        <View style={styles.quickActionsSection}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <View style={styles.quickActionsGrid}>
+            {/* Deposit Action */}
+            <Pressable
+              style={styles.actionItem}
+              onPress={() => setInfoModal({ visible: true, title: 'Deposit Funds', message: 'This feature is coming soon. You\'ll be able to deposit funds to your wallet soon.', icon: '💳', isComingSoon: true })}
+            >
+              <View style={[styles.actionCircle, styles.depositActionBg]}>
+                <Text style={styles.actionIcon}>💳</Text>
+              </View>
+              <Text style={styles.actionLabel}>Deposit</Text>
+            </Pressable>
+
+            {/* Withdraw Action */}
+            <Pressable
+              style={styles.actionItem}
+              onPress={() => setInfoModal({ visible: true, title: 'Withdraw Funds', message: 'This feature is coming soon. You\'ll be able to request withdrawals soon.', icon: '🏦', isComingSoon: true })}
+            >
+              <View style={[styles.actionCircle, styles.withdrawActionBg]}>
+                <Text style={styles.actionIcon}>🏦</Text>
+              </View>
+              <Text style={styles.actionLabel}>Withdraw</Text>
+            </Pressable>
+
+            {/* Plans Action */}
+            <Pressable
+              style={styles.actionItem}
+              onPress={() => navigation.navigate('PlanSelection' as never)}
+            >
+              <View style={[styles.actionCircle, styles.plansActionBg]}>
+                <Text style={styles.actionIcon}>📊</Text>
+              </View>
+              <Text style={styles.actionLabel}>Plans</Text>
+            </Pressable>
+          </View>
+        </View>
+
+        {/* Investment Summary Section */}
+        <View style={styles.summarySection}>
+          <View style={styles.summaryHeader}>
+            <Text style={styles.sectionTitle}>Investment Summary</Text>
+            <Pressable onPress={() => navigation.navigate('Analysis' as never)}>
+              <Text style={styles.seeAnalysisLink}>See Analysis →</Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.summaryCard}>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Active Plan</Text>
+              <Text style={styles.summaryValue}>{user?.activePlan || 'No Plan'}</Text>
+            </View>
+            <View style={styles.summaryDivider} />
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Net Balance</Text>
+              <Text style={[styles.summaryValue, styles.balanceHighlight]}>
+                {formatCurrency(
+                  stats.totalDepositsApproved + stats.totalROIEarnings - stats.totalWithdrawalsApproved
+                )}
               </Text>
             </View>
-          </View>
-        </View>
-
-        {/* Quick Actions */}
-        <View style={styles.actionsSection}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.actionsGrid}>
-            <Pressable
-              style={[styles.actionButton, styles.depositButton]}
-              onPress={() => Alert.alert('Deposit', 'Deposit feature coming soon')}
-            >
-              <Text style={styles.actionButtonIcon}>💳</Text>
-              <Text style={styles.actionButtonText}>Deposit Funds</Text>
-              <Text style={styles.actionButtonSubtext}>Add money to your wallet</Text>
-            </Pressable>
-
-            <Pressable
-              style={[styles.actionButton, styles.withdrawButton]}
-              onPress={() => Alert.alert('Withdraw', 'Withdraw feature coming soon')}
-            >
-              <Text style={styles.actionButtonIcon}>💸</Text>
-              <Text style={styles.actionButtonText}>Withdraw</Text>
-              <Text style={styles.actionButtonSubtext}>Request a withdrawal</Text>
-            </Pressable>
           </View>
         </View>
 
         {/* Footer Spacing */}
         <View style={styles.footer} />
       </ScrollView>
+
+      {/* PIN Modal */}
+      <Modal visible={showPinModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.pinCodeModal}>
+            <Text style={styles.pinModalTitle}>Enter Your PIN</Text>
+            <Text style={styles.pinModalSubtitle}>4-digit security code</Text>
+            <TextInput
+              style={styles.pinCodeInput}
+              placeholder="••••"
+              placeholderTextColor="#94A3B8"
+              secureTextEntry
+              keyboardType="numeric"
+              maxLength={4}
+              value={pinCodeInput}
+              onChangeText={setPinCodeInput}
+            />
+            <View style={styles.pinModalButtons}>
+              <Pressable
+                style={[styles.pinModalButton, styles.pinCancelButton]}
+                onPress={() => {
+                  setShowPinModal(false);
+                  setPinCodeInput('');
+                }}
+              >
+                <Text style={styles.pinCancelButtonText}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.pinModalButton, styles.pinConfirmButton]}
+                onPress={handlePinSubmit}
+              >
+                <Text style={styles.pinConfirmButtonText}>Confirm</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modals */}
+      <SuccessModal
+        visible={successModal.visible}
+        title={successModal.title}
+        message={successModal.message}
+        onClose={() => setSuccessModal({ ...successModal, visible: false })}
+      />
+
+      <ErrorModal
+        visible={errorModal.visible}
+        title={errorModal.title}
+        message={errorModal.message}
+        onClose={() => setErrorModal({ ...errorModal, visible: false })}
+      />
+
+      <ConfirmationModal
+        visible={confirmModal.visible}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        isDangerous={confirmModal.isDangerous}
+        confirmText={confirmModal.isDangerous ? 'Log Out' : 'Confirm'}
+        onCancel={() => setConfirmModal({ ...confirmModal, visible: false })}
+        onConfirm={confirmModal.onConfirm}
+      />
+
+      <InfoModal
+        visible={infoModal.visible}
+        title={infoModal.title}
+        message={infoModal.message}
+        icon={infoModal.icon}
+        isComingSoon={infoModal.isComingSoon}
+        buttonText={infoModal.isComingSoon ? 'Okay' : 'Got it'}
+        onClose={() => setInfoModal({ ...infoModal, visible: false })}
+      />
     </SafeAreaView>
   );
 }
@@ -225,40 +421,49 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F5F7FA',
   },
-  header: {
+  headerGreen: {
+    backgroundColor: '#00A86B',
     paddingHorizontal: 20,
-    paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    paddingVertical: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    zIndex: 10,
+    elevation: 2,
   },
   headerContent: {
     flex: 1,
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#0F172A',
-  },
-  logoutButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: '#FEE2E2',
-    borderRadius: 8,
-  },
-  logoutText: {
+  greetingText: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#DC2626',
+    fontWeight: '500',
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: 2,
+  },
+  userNameText: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  headerIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoutIcon: {
+    fontSize: 20,
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
   scrollContent: {
     flex: 1,
     paddingHorizontal: 16,
+    paddingTop: 20,
   },
   loadingContainer: {
     flex: 1,
@@ -271,62 +476,82 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
   },
-  welcomeSection: {
-    marginTop: 20,
-    marginBottom: 12,
+  walletCardContainer: {
+    marginTop: -8,
+    marginBottom: 20,
+    paddingHorizontal: 0,
   },
-  welcomeTitle: {
-    fontSize: 20,
-    fontWeight: '700',
+  walletCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 6,
+  },
+  walletCardLeft: {
+    flex: 1,
+    marginRight: 12,
+  },
+  walletLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#94A3B8',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  walletAmount: {
+    fontSize: 28,
+    fontWeight: '800',
     color: '#0F172A',
     marginBottom: 4,
   },
-  welcomeSubtitle: {
-    fontSize: 14,
-    color: '#475569',
+  walletSubtext: {
+    fontSize: 12,
+    color: '#CBD5E1',
     fontWeight: '500',
   },
-  activePlanText: {
-    color: '#0EA5E9',
+  walletCardDivider: {
+    width: 1,
+    height: 60,
+    backgroundColor: '#E2E8F0',
+    marginHorizontal: 12,
+  },
+  walletCardRight: {
+    alignItems: 'center',
+    gap: 10,
+  },
+  eyeButtonContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F1F5F9',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  eyeButton: {
+    fontSize: 20,
+  },
+  addMoneyButton: {
+    backgroundColor: '#00A86B',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  addMoneyText: {
+    fontSize: 12,
     fontWeight: '700',
-  },
-  walletCard: {
-    backgroundColor: '#0EA5E9',
-    borderRadius: 16,
-    padding: 24,
-    marginVertical: 16,
-    shadowColor: '#0EA5E9',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 5,
-  },
-  walletLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#E0F2FE',
-    marginBottom: 8,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  walletAmount: {
-    fontSize: 36,
-    fontWeight: '800',
     color: '#FFFFFF',
-    marginBottom: 12,
+    textAlign: 'center',
   },
-  walletFooter: {
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.3)',
-    paddingTop: 12,
-  },
-  walletFooterText: {
-    fontSize: 13,
-    color: '#E0F2FE',
-    fontWeight: '500',
-  },
-  statsSection: {
-    marginVertical: 20,
+  analyticsSection: {
+    marginBottom: 24,
   },
   sectionTitle: {
     fontSize: 16,
@@ -334,14 +559,102 @@ const styles = StyleSheet.create({
     color: '#0F172A',
     marginBottom: 12,
   },
-  statsGrid: {
+  analyticsGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'space-between',
+    gap: 10,
+  },
+  analyticsCard: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 14,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  analyticsLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#94A3B8',
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
+    marginBottom: 8,
+  },
+  analyticsValue: {
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  roiColor: {
+    color: '#10B981',
+  },
+  depositColor: {
+    color: '#0EA5E9',
+  },
+  withdrawColor: {
+    color: '#F59E0B',
+  },
+  analyticsIndicator: {
+    height: 3,
+    backgroundColor: '#10B981',
+    borderRadius: 2,
+  },
+  quickActionsSection: {
+    marginBottom: 24,
+  },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     gap: 12,
   },
-  statCard: {
-    width: '48%',
+  actionItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  actionCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  depositActionBg: {
+    backgroundColor: '#DBEAFE',
+  },
+  withdrawActionBg: {
+    backgroundColor: '#FEE2E2',
+  },
+  plansActionBg: {
+    backgroundColor: '#DCFCE7',
+  },
+  actionIcon: {
+    fontSize: 24,
+  },
+  actionLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#0F172A',
+    textAlign: 'center',
+  },
+  summarySection: {
+    marginBottom: 24,
+  },
+  summaryHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  seeAnalysisLink: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#00A86B',
+  },
+  summaryCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 16,
@@ -351,68 +664,102 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  statLabel: {
-    fontSize: 12,
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  summaryLabel: {
+    fontSize: 14,
     fontWeight: '600',
     color: '#64748B',
-    marginBottom: 8,
-    textTransform: 'uppercase',
-    letterSpacing: 0.3,
   },
-  statValue: {
-    fontSize: 18,
+  summaryValue: {
+    fontSize: 14,
     fontWeight: '700',
     color: '#0F172A',
   },
-  roiValue: {
-    color: '#10B981',
+  balanceHighlight: {
+    color: '#00A86B',
+    fontSize: 16,
   },
-  actionsSection: {
-    marginVertical: 20,
+  summaryDivider: {
+    height: 1,
+    backgroundColor: '#E2E8F0',
   },
-  actionsGrid: {
+  footer: {
+    height: 40,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pinCodeModal: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 32,
+    width: '80%',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 10,
+  },
+  pinModalTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  pinModalSubtitle: {
+    fontSize: 14,
+    color: '#64748B',
+    textAlign: 'center',
+    marginBottom: 24,
+    fontWeight: '500',
+  },
+  pinCodeInput: {
+    height: 60,
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
+    borderRadius: 12,
+    fontSize: 28,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 24,
+    color: '#0F172A',
+    letterSpacing: 8,
+  },
+  pinModalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 12,
   },
-  actionButton: {
+  pinModalButton: {
     flex: 1,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
+    height: 50,
+    borderRadius: 10,
     justifyContent: 'center',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    alignItems: 'center',
   },
-  depositButton: {
-    backgroundColor: '#DBEAFE',
-    borderLeftWidth: 4,
-    borderLeftColor: '#0EA5E9',
+  pinCancelButton: {
+    backgroundColor: '#F1F5F9',
   },
-  withdrawButton: {
-    backgroundColor: '#FECACA',
-    borderLeftWidth: 4,
-    borderLeftColor: '#EF4444',
-  },
-  actionButtonIcon: {
-    fontSize: 28,
-    marginBottom: 8,
-  },
-  actionButtonText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 4,
-  },
-  actionButtonSubtext: {
-    fontSize: 12,
+  pinCancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
     color: '#64748B',
-    textAlign: 'center',
   },
-  footer: {
-    height: 40,
+  pinConfirmButton: {
+    backgroundColor: '#00A86B',
+  },
+  pinConfirmButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
 });

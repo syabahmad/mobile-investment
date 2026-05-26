@@ -2,6 +2,8 @@ require('dotenv').config();
 
 const cors = require('cors');
 const express = require('express');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const connectDb = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
@@ -9,15 +11,29 @@ const walletRoutes = require('./routes/walletRoutes');
 
 const app = express();
 
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/auth', authRoutes);
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
+  message: 'Too many requests from this IP, please try again later'
+});
+app.use('/api/', globalLimiter);
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  message: 'Too many login attempts from this IP, please try again later'
+});
+
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/wallet', walletRoutes);
 
 app.get('/', (req, res) => {
 	res.status(200).json({
-		message: 'API is running',
+		message: 'API is secured and running',
 		uptime: process.uptime(),
 	});
 });

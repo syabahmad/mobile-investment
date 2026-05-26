@@ -1,9 +1,12 @@
 import { AxiosError } from 'axios';
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import SuccessModal from '../components/SuccessModal';
+import ErrorModal from '../components/ErrorModal';
 
 type AuthResponse = {
   token: string;
@@ -22,13 +25,16 @@ type ApiError = {
 
 export default function LoginScreen() {
   const { login } = useAuth();
+  const navigation = useNavigation<any>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [successModal, setSuccessModal] = useState({ visible: false, title: '', message: '' });
+  const [errorModal, setErrorModal] = useState({ visible: false, title: '', message: '' });
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert('Missing Fields', 'Please enter your email and password.');
+      setErrorModal({ visible: true, title: 'Missing Fields', message: 'Please enter your email and password.' });
       return;
     }
 
@@ -43,11 +49,14 @@ export default function LoginScreen() {
       const { token, user } = response.data;
       await login(token, user);
 
-      // TODO: Securely store token in AsyncStorage/SecureStore and navigate to Dashboard.
-      Alert.alert('Login Successful', 'Welcome back!');
+      setSuccessModal({ visible: true, title: 'Welcome Back!', message: 'Login successful. Redirecting...' });
+      setTimeout(() => {
+        setSuccessModal({ visible: false, title: '', message: '' });
+        navigation.navigate('PlanSelection');
+      }, 1500);
     } catch (error) {
       const axiosError = error as AxiosError<ApiError>;
-      Alert.alert('Login Failed', axiosError.response?.data?.message || 'Something went wrong');
+      setErrorModal({ visible: true, title: 'Login Failed', message: axiosError.response?.data?.message || 'Something went wrong' });
     } finally {
       setIsLoading(false);
     }
@@ -91,6 +100,21 @@ export default function LoginScreen() {
           </Pressable>
         </View>
       </KeyboardAvoidingView>
+
+      <SuccessModal
+        visible={successModal.visible}
+        title={successModal.title}
+        message={successModal.message}
+        buttonText="Continue"
+        onClose={() => setSuccessModal({ ...successModal, visible: false })}
+      />
+
+      <ErrorModal
+        visible={errorModal.visible}
+        title={errorModal.title}
+        message={errorModal.message}
+        onClose={() => setErrorModal({ ...errorModal, visible: false })}
+      />
     </SafeAreaView>
   );
 }

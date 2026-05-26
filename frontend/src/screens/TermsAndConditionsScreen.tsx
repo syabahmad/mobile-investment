@@ -1,6 +1,9 @@
-import { useCallback, useMemo } from 'react';
-import { Alert, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useMemo, useState } from 'react';
+import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import SuccessModal from '../components/SuccessModal';
+import ErrorModal from '../components/ErrorModal';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 interface Plan {
   id: string;
@@ -10,7 +13,7 @@ interface Plan {
   color: string;
 }
 
-type TermsRoute = RouteProp<{ TermsAndConditions: { plan: Plan } }, 'TermsAndConditions'>;
+type TermsRoute = RouteProp<{ TermsCondition: { selectedPlan: string } }, 'TermsCondition'>;
 
 const TERMS_CONTENT = `
 INVESTMENT PLAN TERMS & CONDITIONS
@@ -49,36 +52,48 @@ By clicking "I Agree", you confirm that you have read and accepted all terms and
 `;
 
 export default function TermsAndConditionsScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const route = useRoute<TermsRoute>();
-  const plan = useMemo(() => route.params?.plan, [route.params]);
+  const selectedPlanName = useMemo(() => route.params?.selectedPlan, [route.params]);
+  const [successModal, setSuccessModal] = useState({ visible: false, title: '', message: '' });
+  const [errorModal, setErrorModal] = useState({ visible: false, title: '', message: '' });
+  const [confirmModal, setConfirmModal] = useState({ visible: false, title: '', message: '', onConfirm: () => {} });
 
   const handleAgree = useCallback(async () => {
-    if (!plan) {
-      Alert.alert('Error', 'Plan information is missing');
+    if (!selectedPlanName) {
+      setErrorModal({ visible: true, title: 'Error', message: 'Plan information is missing' });
       return;
     }
 
     try {
       // Here you would ideally call the backend to save the plan selection
       // For now, we'll just navigate to dashboard
-      Alert.alert('Success', `You've selected ${plan.name}. Welcome to your investment journey!`);
+      setSuccessModal({ visible: true, title: 'Plan Selected!', message: `You've selected ${selectedPlanName}. Welcome to your investment journey!` });
 
-      // Navigate to Dashboard - this will trigger AuthContext state update
-      navigation.navigate('Dashboard' as never);
+      // Navigate to Dashboard after a short delay
+      setTimeout(() => {
+        setSuccessModal({ visible: false, title: '', message: '' });
+        // Use replace to prevent going back to terms
+        navigation.replace('Dashboard');
+      }, 1500);
     } catch (error) {
-      Alert.alert('Error', 'Failed to complete plan selection. Please try again.');
+      setErrorModal({ visible: true, title: 'Error', message: 'Failed to complete plan selection. Please try again.' });
     }
-  }, [plan, navigation]);
+  }, [selectedPlanName, navigation]);
 
   const handleDecline = useCallback(() => {
-    Alert.alert('Plan Not Selected', 'You must agree to the terms to continue', [
-      { text: 'Go Back', onPress: () => navigation.goBack() },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
+    setConfirmModal({
+      visible: true,
+      title: 'Decline Terms?',
+      message: 'You must agree to the terms to proceed with this investment plan.',
+      onConfirm: () => {
+        setConfirmModal({ ...confirmModal, visible: false });
+        navigation.goBack();
+      },
+    });
   }, [navigation]);
 
-  if (!plan) {
+  if (!selectedPlanName) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
@@ -97,9 +112,9 @@ export default function TermsAndConditionsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header with Plan Info */}
-      <View style={[styles.planBanner, { backgroundColor: `${plan.color}20` }]}>
-        <Text style={[styles.planNameInBanner, { color: plan.color }]}>{plan.name}</Text>
-        <Text style={styles.planDescInBanner}>{plan.dailyProfit}</Text>
+      <View style={[styles.planBanner, { backgroundColor: `#00A86B20` }]}>
+        <Text style={[styles.planNameInBanner, { color: '#00A86B' }]}>{selectedPlanName}</Text>
+        <Text style={styles.planDescInBanner}>Investment terms for this plan</Text>
       </View>
 
       {/* Terms Content */}
@@ -117,6 +132,30 @@ export default function TermsAndConditionsScreen() {
           <Text style={styles.agreeButtonText}>I Agree</Text>
         </Pressable>
       </View>
+
+      <SuccessModal
+        visible={successModal.visible}
+        title={successModal.title}
+        message={successModal.message}
+        buttonText="Continue"
+        onClose={() => setSuccessModal({ ...successModal, visible: false })}
+      />
+
+      <ErrorModal
+        visible={errorModal.visible}
+        title={errorModal.title}
+        message={errorModal.message}
+        onClose={() => setErrorModal({ ...errorModal, visible: false })}
+      />
+
+      <ConfirmationModal
+        visible={confirmModal.visible}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText="Go Back"
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal({ ...confirmModal, visible: false })}
+      />
     </SafeAreaView>
   );
 }

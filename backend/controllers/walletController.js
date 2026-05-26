@@ -4,8 +4,8 @@ const User = require('../models/User');
 const submitDeposit = async (req, res) => {
   try {
     const { amount, transactionId } = req.body;
-    if (!amount || !transactionId) {
-      return res.status(400).json({ message: 'Amount and transactionId are required' });
+    if (!amount || typeof amount !== 'number' || amount <= 0 || !transactionId) {
+      return res.status(400).json({ message: 'A valid positive amount and transactionId are required' });
     }
 
     const existingAuth = await Transaction.findOne({ transactionId });
@@ -30,18 +30,22 @@ const submitDeposit = async (req, res) => {
 const requestWithdrawal = async (req, res) => {
   try {
     const { amount, targetPhone } = req.body;
-    if (!amount || !targetPhone) {
-      return res.status(400).json({ message: 'Amount and targetPhone are required' });
+    if (!amount || typeof amount !== 'number' || amount <= 0) {
+      return res.status(400).json({ message: 'A valid positive amount is required' });
+    }
+    if (!targetPhone) {
+      return res.status(400).json({ message: 'targetPhone is required' });
     }
 
-    const user = await User.findById(req.user.id);
-    if (user.currentBalance < amount) {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: req.user.id, currentBalance: { $gte: amount } },
+      { $inc: { currentBalance: -amount } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
       return res.status(400).json({ message: 'Insufficient balance to request withdrawal' });
     }
-
-    // Deduct immediately so they can't double-spend while pending
-    user.currentBalance -= amount;
-    await user.save();
 
     const transaction = await Transaction.create({
       user: req.user.id,
@@ -51,7 +55,7 @@ const requestWithdrawal = async (req, res) => {
       status: 'pending',
     });
 
-    return res.status(201).json({ message: 'Withdrawal requested successfully', transaction, currentBalance: user.currentBalance });
+    return res.status(201).json({ message: 'Withdrawal requested successfully', transaction, currentBalance: updatedUser.currentBalance });
   } catch (error) {
     return res.status(500).json({ message: error.message || 'Withdrawal request failed' });
   }

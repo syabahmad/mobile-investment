@@ -4,7 +4,8 @@
     "module": "esnext",
     "jsx": "react-jsx",
     "strict": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0"
   },
   "include": [
     "src",

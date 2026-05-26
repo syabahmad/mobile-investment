@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
 const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -11,18 +12,12 @@ const authMiddleware = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = {
-      id: decoded.id,
-      name: decoded.name,
-      email: decoded.email,
-      phone: decoded.phone,
-      role: decoded.role,
-      currentBalance: decoded.currentBalance,
-      activePlan: decoded.activePlan,
-      isVerified: decoded.isVerified,
-      dp: decoded.dp,
-    };
+    const user = await User.findById(decoded.id).select('-password');
+    if (!user) {
+        return res.status(401).json({ message: 'User no longer exists' });
+    }
 
+    req.user = user;
     return next();
   } catch (error) {
     return res.status(401).json({ message: 'Not authorized, token failed' });

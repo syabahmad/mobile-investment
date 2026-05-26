@@ -1,9 +1,11 @@
 import { AxiosError } from 'axios';
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
 
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import SuccessModal from '../components/SuccessModal';
+import ErrorModal from '../components/ErrorModal';
 
 type AuthResponse = {
   token: string;
@@ -27,10 +29,12 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [successModal, setSuccessModal] = useState({ visible: false, title: '', message: '' });
+  const [errorModal, setErrorModal] = useState({ visible: false, title: '', message: '' });
 
   const handleRegister = async () => {
     if (!name.trim() || !email.trim() || !password.trim() || !phone.trim()) {
-      Alert.alert('Missing Fields', 'Please fill all fields before registering.');
+      setErrorModal({ visible: true, title: 'Missing Fields', message: 'Please fill all fields before registering.' });
       return;
     }
 
@@ -48,10 +52,10 @@ export default function RegisterScreen() {
       await login(token, user);
 
       // TODO: Securely store token in AsyncStorage/SecureStore and navigate to Dashboard.
-      Alert.alert('Registration Successful', 'Your account has been created successfully.');
+      setSuccessModal({ visible: true, title: 'Account Created!', message: 'Your account has been created successfully. Welcome aboard!' });
     } catch (error) {
       const axiosError = error as AxiosError<ApiError>;
-      Alert.alert('Registration Failed', axiosError.response?.data?.message || 'Something went wrong');
+      setErrorModal({ visible: true, title: 'Registration Failed', message: axiosError.response?.data?.message || 'Something went wrong' });
     } finally {
       setIsLoading(false);
     }
@@ -118,6 +122,21 @@ export default function RegisterScreen() {
           </Pressable>
         </View>
       </KeyboardAvoidingView>
+
+      <SuccessModal
+        visible={successModal.visible}
+        title={successModal.title}
+        message={successModal.message}
+        buttonText="Continue"
+        onClose={() => setSuccessModal({ ...successModal, visible: false })}
+      />
+
+      <ErrorModal
+        visible={errorModal.visible}
+        title={errorModal.title}
+        message={errorModal.message}
+        onClose={() => setErrorModal({ ...errorModal, visible: false })}
+      />
     </SafeAreaView>
   );
 }

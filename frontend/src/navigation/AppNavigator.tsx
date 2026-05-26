@@ -7,16 +7,18 @@ import RegisterScreen from '../screens/RegisterScreen';
 import PlanSelectionScreen from '../screens/PlanSelectionScreen';
 import TermsAndConditionsScreen from '../screens/TermsAndConditionsScreen';
 import DashboardScreen from '../screens/DashboardScreen';
+import AnalysisScreen from '../screens/AnalysisScreen';
 
-type AppStackParamList = {
+export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   PlanSelection: undefined;
-  TermsAndConditions: { plan: any };
+  TermsCondition: { selectedPlan: string };
   Dashboard: undefined;
+  Analysis: undefined;
 };
 
-const Stack = createNativeStackNavigator<AppStackParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function LoadingScreen() {
   return (
@@ -28,28 +30,32 @@ function LoadingScreen() {
 }
 
 export default function AppNavigator() {
-  const { token, loading } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) {
     return <LoadingScreen />;
   }
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {token === null ? (
-        // Auth Stack: Login and Register
-        <>
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
-        </>
-      ) : (
-        // Onboarded Stack: Plan Selection → Terms & Conditions → Dashboard
-        <>
-          <Stack.Screen name="PlanSelection" component={PlanSelectionScreen} />
-          <Stack.Screen name="TermsAndConditions" component={TermsAndConditionsScreen} />
-          <Stack.Screen name="Dashboard" component={DashboardScreen} />
-        </>
-      )}
+    <Stack.Navigator 
+      initialRouteName="Login"
+      screenOptions={{ 
+        headerShown: false,
+        animation: 'slide_from_right',
+      }}
+    >
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="PlanSelection" component={PlanSelectionScreen} />
+      <Stack.Screen name="TermsCondition" component={TermsAndConditionsScreen} />
+      <Stack.Screen 
+        name="Dashboard" 
+        component={DashboardScreen} 
+        options={{
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen name="Analysis" component={AnalysisScreen} />
     </Stack.Navigator>
   );
 }
