@@ -1,10 +1,15 @@
 const express = require('express');
-const { submitDeposit, requestWithdrawal, selectPlan, getTransactions, distributeDailyProfit } = require('../controllers/walletController');
+const { submitDeposit, requestWithdrawal, selectPlan, getTransactions, distributeDailyProfit, getActivePlans, getActiveCategories, getCategoryWithPlans } = require('../controllers/walletController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// Apply auth middleware to all wallet routes
+// Public routes - no auth required
+router.get('/categories', getActiveCategories);
+router.get('/systems', getCategoryWithPlans);
+router.get('/plans', getActivePlans);
+
+// Apply auth middleware to all remaining wallet routes
 router.use(authMiddleware);
 
 router.post('/deposit', submitDeposit);

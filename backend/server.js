@@ -8,6 +8,7 @@ const rateLimit = require('express-rate-limit');
 const connectDb = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const walletRoutes = require('./routes/walletRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
@@ -15,12 +16,11 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
-  max: 100, 
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: 'Too many requests from this IP, please try again later'
 });
-app.use('/api/', globalLimiter);
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -29,7 +29,8 @@ const authLimiter = rateLimit({
 });
 
 app.use('/api/auth', authLimiter, authRoutes);
-app.use('/api/wallet', walletRoutes);
+app.use('/api/wallet', apiLimiter, walletRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
 	res.status(200).json({
