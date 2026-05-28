@@ -28,9 +28,12 @@ const router = express.Router();
  *   get:
  *     tags: [Admin]
  *     summary: Get all pending transactions
+ *     security: [{ adminApiKey: [] }]
  *     responses:
  *       200:
  *         description: List of pending transactions
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.get('/pending-transactions', getPendingTransactions);
 
@@ -40,6 +43,7 @@ router.get('/pending-transactions', getPendingTransactions);
  *   get:
  *     tags: [Admin]
  *     summary: Get all transactions with pagination and status filter
+ *     security: [{ adminApiKey: [] }]
  *     parameters:
  *       - in: query
  *         name: status
@@ -53,6 +57,8 @@ router.get('/pending-transactions', getPendingTransactions);
  *     responses:
  *       200:
  *         description: Paginated transactions with counts
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.get('/transactions', getAllTransactions);
 
@@ -62,6 +68,7 @@ router.get('/transactions', getAllTransactions);
  *   post:
  *     tags: [Admin]
  *     summary: Approve or reject a transaction
+ *     security: [{ adminApiKey: [] }]
  *     requestBody:
  *       required: true
  *       content:
@@ -75,6 +82,8 @@ router.get('/transactions', getAllTransactions);
  *     responses:
  *       200:
  *         description: Transaction reviewed
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.post('/review-transaction', reviewTransaction);
 
@@ -84,6 +93,7 @@ router.post('/review-transaction', reviewTransaction);
  *   get:
  *     tags: [Admin]
  *     summary: Get all users with pagination and stats
+ *     security: [{ adminApiKey: [] }]
  *     parameters:
  *       - in: query
  *         name: page
@@ -94,6 +104,8 @@ router.post('/review-transaction', reviewTransaction);
  *     responses:
  *       200:
  *         description: Paginated users with aggregate stats
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.get('/users', getAllUsers);
 
@@ -103,6 +115,7 @@ router.get('/users', getAllUsers);
  *   get:
  *     tags: [Admin]
  *     summary: Get single user detail with transactions and stats
+ *     security: [{ adminApiKey: [] }]
  *     parameters:
  *       - in: path
  *         name: userId
@@ -111,6 +124,8 @@ router.get('/users', getAllUsers);
  *     responses:
  *       200:
  *         description: User detail with transactions
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.get('/users/:userId', getUserDetail);
 
@@ -120,6 +135,7 @@ router.get('/users/:userId', getUserDetail);
  *   post:
  *     tags: [Admin]
  *     summary: Manually update a user's balance
+ *     security: [{ adminApiKey: [] }]
  *     requestBody:
  *       required: true
  *       content:
@@ -134,6 +150,8 @@ router.get('/users/:userId', getUserDetail);
  *     responses:
  *       200:
  *         description: Balance updated
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.post('/update-balance', updateUserBalance);
 
@@ -143,9 +161,12 @@ router.post('/update-balance', updateUserBalance);
  *   get:
  *     tags: [Admin - Categories]
  *     summary: Get all investment categories
+ *     security: [{ adminApiKey: [] }]
  *     responses:
  *       200:
  *         description: List of categories
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.get('/categories', getCategories);
 
@@ -155,6 +176,7 @@ router.get('/categories', getCategories);
  *   post:
  *     tags: [Admin - Categories]
  *     summary: Create a new investment category
+ *     security: [{ adminApiKey: [] }]
  *     requestBody:
  *       required: true
  *       content:
@@ -168,6 +190,8 @@ router.get('/categories', getCategories);
  *     responses:
  *       201:
  *         description: Category created
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.post('/categories', createCategory);
 
@@ -177,6 +201,7 @@ router.post('/categories', createCategory);
  *   put:
  *     tags: [Admin - Categories]
  *     summary: Update a category
+ *     security: [{ adminApiKey: [] }]
  *     parameters:
  *       - in: path
  *         name: categoryId
@@ -194,6 +219,8 @@ router.post('/categories', createCategory);
  *     responses:
  *       200:
  *         description: Category updated
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.put('/categories/:categoryId', updateCategory);
 
@@ -203,6 +230,7 @@ router.put('/categories/:categoryId', updateCategory);
  *   delete:
  *     tags: [Admin - Categories]
  *     summary: Delete a category (plans must be removed first)
+ *     security: [{ adminApiKey: [] }]
  *     parameters:
  *       - in: path
  *         name: categoryId
@@ -213,6 +241,8 @@ router.put('/categories/:categoryId', updateCategory);
  *         description: Category deleted
  *       400:
  *         description: Category has linked plans
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.delete('/categories/:categoryId', deleteCategory);
 
@@ -222,9 +252,12 @@ router.delete('/categories/:categoryId', deleteCategory);
  *   get:
  *     tags: [Admin - Plans]
  *     summary: Get all plans with category info
+ *     security: [{ adminApiKey: [] }]
  *     responses:
  *       200:
  *         description: List of plans
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.get('/plans', getPlans);
 
@@ -234,6 +267,7 @@ router.get('/plans', getPlans);
  *   post:
  *     tags: [Admin - Plans]
  *     summary: Create a new plan
+ *     security: [{ adminApiKey: [] }]
  *     requestBody:
  *       required: true
  *       content:
@@ -251,6 +285,8 @@ router.get('/plans', getPlans);
  *     responses:
  *       201:
  *         description: Plan created
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.post('/plans', createPlan);
 
@@ -260,6 +296,7 @@ router.post('/plans', createPlan);
  *   put:
  *     tags: [Admin - Plans]
  *     summary: Update a plan
+ *     security: [{ adminApiKey: [] }]
  *     parameters:
  *       - in: path
  *         name: planId
@@ -280,6 +317,8 @@ router.post('/plans', createPlan);
  *     responses:
  *       200:
  *         description: Plan updated
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.put('/plans/:planId', updatePlan);
 
@@ -289,6 +328,7 @@ router.put('/plans/:planId', updatePlan);
  *   delete:
  *     tags: [Admin - Plans]
  *     summary: Delete a plan
+ *     security: [{ adminApiKey: [] }]
  *     parameters:
  *       - in: path
  *         name: planId
@@ -297,6 +337,8 @@ router.put('/plans/:planId', updatePlan);
  *     responses:
  *       200:
  *         description: Plan deleted
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.delete('/plans/:planId', deletePlan);
 
@@ -306,6 +348,7 @@ router.delete('/plans/:planId', deletePlan);
  *   get:
  *     tags: [Admin - Mutual Funds]
  *     summary: Get all mutual fund redemption requests
+ *     security: [{ adminApiKey: [] }]
  *     parameters:
  *       - in: query
  *         name: status
@@ -313,6 +356,8 @@ router.delete('/plans/:planId', deletePlan);
  *     responses:
  *       200:
  *         description: List of mutual fund requests with user data
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.get('/mutual-funds/requests', getAllMutualFundRequests);
 
@@ -322,6 +367,7 @@ router.get('/mutual-funds/requests', getAllMutualFundRequests);
  *   post:
  *     tags: [Admin - Mutual Funds]
  *     summary: Approve or reject a mutual fund redemption request
+ *     security: [{ adminApiKey: [] }]
  *     requestBody:
  *       required: true
  *       content:
@@ -338,6 +384,8 @@ router.get('/mutual-funds/requests', getAllMutualFundRequests);
  *         description: Request reviewed
  *       400:
  *         description: Validation error
+ *       403:
+ *         description: Forbidden - valid admin API key required
  */
 router.post('/mutual-funds/review', reviewMutualFundRequest);
 

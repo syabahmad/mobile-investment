@@ -93,7 +93,11 @@ const getTransactions = async (req, res) => {
 
 const distributeDailyProfit = async (req, res) => {
   try {
-    // Load plan rates from database
+    const apiKey = req.headers['x-admin-key'];
+    if (!apiKey || apiKey !== process.env.ADMIN_API_KEY) {
+      return res.status(403).json({ message: 'Forbidden. Admin API key required.' });
+    }
+
     const activePlans = await Plan.find({ isActive: true });
     const profitRates = {};
     for (const plan of activePlans) {

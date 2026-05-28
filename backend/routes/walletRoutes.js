@@ -11,6 +11,7 @@ const router = express.Router();
  *   get:
  *     tags: [Wallet - Public]
  *     summary: Get active investment categories
+ *     security: []
  *     responses:
  *       200:
  *         description: List of active categories
@@ -23,6 +24,7 @@ router.get('/categories', getActiveCategories);
  *   get:
  *     tags: [Wallet - Public]
  *     summary: Get categories with their plans
+ *     security: []
  *     responses:
  *       200:
  *         description: Systems with nested plans
@@ -35,11 +37,27 @@ router.get('/systems', getCategoryWithPlans);
  *   get:
  *     tags: [Wallet - Public]
  *     summary: Get all active plans
+ *     security: []
  *     responses:
  *       200:
  *         description: List of active plans
  */
 router.get('/plans', getActivePlans);
+
+/**
+ * @openapi
+ * /wallet/trigger-daily-roi:
+ *   post:
+ *     tags: [Wallet - Admin]
+ *     summary: Trigger daily ROI distribution
+ *     security: [{ adminApiKey: [] }]
+ *     responses:
+ *       200:
+ *         description: ROI distributed
+ *       403:
+ *         description: Forbidden - valid admin API key required
+ */
+router.post('/trigger-daily-roi', distributeDailyProfit);
 
 router.use(authMiddleware);
 
@@ -160,18 +178,5 @@ router.post('/mutual-funds/request', requestMutualFundRedemption);
  *         description: List of user's mutual fund requests
  */
 router.get('/mutual-funds/requests', getUserMutualFundRequests);
-
-/**
- * @openapi
- * /wallet/trigger-daily-roi:
- *   post:
- *     tags: [Wallet - Auth]
- *     summary: Trigger daily ROI distribution (dev/testing only)
- *     security: [{ bearerAuth: [] }]
- *     responses:
- *       200:
- *         description: ROI distributed
- */
-router.post('/trigger-daily-roi', distributeDailyProfit);
 
 module.exports = router;

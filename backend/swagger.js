@@ -21,8 +21,15 @@ const options = {
           scheme: 'bearer',
           bearerFormat: 'JWT',
         },
+        adminApiKey: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'x-admin-key',
+          description: 'Admin API key for admin endpoints',
+        },
       },
     },
+    security: [{ bearerAuth: [] }],
   },
   apis: ['./routes/*.js', './controllers/*.js'],
 };
