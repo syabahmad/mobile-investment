@@ -40,6 +40,10 @@ app.use('/api/wallet', apiLimiter, walletRoutes);
 const adminAuthMiddleware = require('./middleware/adminAuthMiddleware');
 app.use('/api/admin', adminAuthMiddleware, adminRoutes);
 
+// Public community routes
+const postsRoutes = require('./routes/postsRoutes');
+app.use('/api/community', postsRoutes);
+
 app.get('/', (req, res) => {
 	res.status(200).json({
 		message: 'API is secured and running',

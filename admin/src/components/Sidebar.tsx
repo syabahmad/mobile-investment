@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Users, TrendingUp, Settings, Layers, Home as HomeIcon, X } from 'lucide-react';
+import { Users, TrendingUp, Settings, Layers, Home as HomeIcon, X, MessageSquare } from 'lucide-react';
 
 interface SidebarProps {
   open: boolean;
@@ -13,6 +13,7 @@ const navItems = [
   { path: '/users', label: 'Users', icon: Users, shortcut: 'U' },
   { path: '/categories', label: 'Systems', icon: Layers, shortcut: 'S' },
   { path: '/plans', label: 'Plans', icon: Settings, shortcut: 'P' },
+  { path: '/posts', label: 'Community', icon: MessageSquare, shortcut: 'C' },
 ];
 
 function isActivePath(pathname: string, path: string) {

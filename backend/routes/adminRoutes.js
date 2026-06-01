@@ -23,6 +23,8 @@ const {
 
 const router = express.Router();
 
+const { createAdminPost } = require('../controllers/postsController');
+
 /**
  * @openapi
  * /admin/pending-transactions:
@@ -404,5 +406,30 @@ router.get('/mutual-funds/requests', getAllMutualFundRequests);
  *         description: Forbidden - valid admin API key required
  */
 router.post('/mutual-funds/review', reviewMutualFundRequest);
+
+/**
+ * @openapi
+ * /admin/posts:
+ *   post:
+ *     tags: [Admin - Posts]
+ *     summary: Create a community post
+ *     security: [{ adminApiKey: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [title, body]
+ *             properties:
+ *               title: { type: string }
+ *               body: { type: string }
+ *               category: { type: string, enum: [update, announcement, education] }
+ *               isPublished: { type: boolean }
+ *     responses:
+ *       201:
+ *         description: Post created
+ */
+router.post('/posts', createAdminPost);
 
 module.exports = router;

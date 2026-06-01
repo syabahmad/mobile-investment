@@ -1,10 +1,13 @@
 {
   "expo": {
     "name": "SmartInvest",
-    "slug": "smartinvest",
+    "slug": "frontend",
     "plugins": [
       "expo-secure-store"
     ],
+    "cli": {
+      "appVersionSource": "manifest"
+    },
     "icon": "./src/assets/images/smartinvest-icon.png",
     "splash": {
       "image": "./src/assets/images/smartinvest-splash.png",

@@ -52,8 +52,11 @@ export default function LoginScreen() {
 
       await login(token, normalizedUser);
 
-      // Always navigate to Dashboard after login; plan selection is reachable from Dashboard.
-      navigation.navigate('Dashboard' as never);
+      // Enter the main tab navigator after login so Home, Community, Analysis, Settings, and Profile are available.
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainTabs' as never }],
+      });
     } catch (error) {
       const axiosError = error as AxiosError<{ message?: string }>;
       const message = axiosError.response?.data?.message || 'Something went wrong';

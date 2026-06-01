@@ -80,6 +80,7 @@ export default function DashboardScreen() {
     onConfirm: () => {},
   });
   const [infoModal, setInfoModal] = useState({ visible: false, title: '', message: '', icon: '🎯', isComingSoon: false });
+  const [menuVisible, setMenuVisible] = useState(false);
 
   const fetchDashboardData = useCallback(async () => {
     try {
@@ -120,6 +121,7 @@ export default function DashboardScreen() {
   }, [fetchDashboardData]);
 
   const handleLogout = async () => {
+    setMenuVisible(false);
     setConfirmModal({
       visible: true,
       title: 'Log Out?',
@@ -144,6 +146,15 @@ export default function DashboardScreen() {
         }
       },
     });
+  };
+
+  const handleOpenSettings = () => {
+    setMenuVisible(false);
+    navigation.navigate('Settings' as never);
+  };
+
+  const handleOpenMenu = () => {
+    setMenuVisible(true);
   };
 
   const handleBalanceToggle = () => {
@@ -230,10 +241,32 @@ export default function DashboardScreen() {
           <Text style={styles.greetingText}>{getGreeting()}</Text>
           <Text style={styles.userNameText}>{user?.name || 'User'}</Text>
         </View>
-        <Pressable style={styles.headerIcon} onPress={handleLogout} hitSlop={15}>
-          <Text style={styles.logoutIcon}>⎋</Text>
+        <Pressable style={styles.headerIcon} onPress={handleOpenMenu} hitSlop={10}>
+          <Text style={styles.moreIcon}>⋮</Text>
         </Pressable>
       </View>
+
+      <Modal visible={menuVisible} transparent animationType="fade" onRequestClose={() => setMenuVisible(false)}>
+        <Pressable style={styles.menuOverlay} onPress={() => setMenuVisible(false)}>
+          <View style={styles.menuCard}>
+            <Pressable style={styles.menuItem} onPress={handleOpenSettings}>
+              <Text style={styles.menuIcon}>⚙</Text>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuTitle}>Settings</Text>
+                <Text style={styles.menuSubtitle}>App preferences and security</Text>
+              </View>
+            </Pressable>
+            <View style={styles.menuDivider} />
+            <Pressable style={styles.menuItem} onPress={handleLogout}>
+              <Text style={[styles.menuIcon, styles.menuIconDanger]}>⎋</Text>
+              <View style={styles.menuTextWrap}>
+                <Text style={[styles.menuTitle, styles.menuTitleDanger]}>Log out</Text>
+                <Text style={styles.menuSubtitle}>Sign out from this device</Text>
+              </View>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
 
       <ScrollView
         style={styles.scrollContent}
@@ -332,13 +365,24 @@ export default function DashboardScreen() {
             {/* Plans Action */}
             <Pressable
               style={styles.actionItem}
-              onPress={() => navigation.navigate('PlanSelection' as never)}
+              onPress={() => navigation.navigate('Systems' as never)}
             >
               <View style={[styles.actionCircle, styles.plansActionBg]}>
                 <Text style={styles.actionIcon}>📊</Text>
               </View>
               <Text style={styles.actionLabel}>Plans</Text>
             </Pressable>
+
+            {/* Community Action */}
+            {/* <Pressable
+              style={styles.actionItem}
+              onPress={() => navigation.navigate('Community' as never)}
+            >
+              <View style={[styles.actionCircle, styles.plansActionBg]}>
+                <Text style={styles.actionIcon}>💬</Text>
+              </View>
+              <Text style={styles.actionLabel}>Community</Text>
+            </Pressable> */}
           </View>
         </View>
 
@@ -357,14 +401,14 @@ export default function DashboardScreen() {
               <Text style={styles.summaryValue}>{activePlanDisplay}</Text>
             </View>
             <View style={styles.summaryDivider} />
-            <View style={styles.summaryRow}>
+            {/* <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Net Balance</Text>
               <Text style={[styles.summaryValue, styles.balanceHighlight]}>
                 {formatCurrency(
                   stats.totalDepositsApproved + stats.totalROIEarnings - stats.totalWithdrawalsApproved
                 )}
               </Text>
-            </View>
+            </View> */}
           </View>
         </View>
 
@@ -453,6 +497,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F7FA',
   },
   headerGreen: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
     backgroundColor: '#00A86B',
     paddingHorizontal: 20,
     paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 12,
@@ -460,8 +508,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    zIndex: 10,
-    elevation: 2,
+    zIndex: 100,
+    elevation: 5,
   },
   headerContent: {
     flex: 1,
@@ -490,10 +538,71 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '700',
   },
+  moreIcon: {
+    fontSize: 22,
+    color: '#FFFFFF',
+    fontWeight: '900',
+    marginTop: -2,
+  },
+  menuOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.32)',
+    alignItems: 'flex-end',
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) + 12 : 56,
+    paddingRight: 14,
+  },
+  menuCard: {
+    width: 240,
+    borderRadius: 18,
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.16,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+  },
+  menuIcon: {
+    width: 28,
+    fontSize: 18,
+    color: '#0F172A',
+    marginRight: 10,
+    textAlign: 'center',
+  },
+  menuIconDanger: {
+    color: '#DC2626',
+  },
+  menuTextWrap: {
+    flex: 1,
+  },
+  menuTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  menuTitleDanger: {
+    color: '#DC2626',
+  },
+  menuSubtitle: {
+    marginTop: 2,
+    fontSize: 11,
+    color: '#64748B',
+  },
+  menuDivider: {
+    height: 1,
+    backgroundColor: '#E2E8F0',
+    marginHorizontal: 14,
+  },
   scrollContent: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingTop: 20,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) + 60 : 76,
   },
   loadingContainer: {
     flex: 1,
@@ -507,7 +616,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   walletCardContainer: {
-    marginTop: -8,
+    marginTop: 20,
     marginBottom: 20,
     paddingHorizontal: 0,
   },

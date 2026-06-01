@@ -8,6 +8,7 @@ import UserDetail from './UserDetail';
 import Plans from './Plans';
 import Categories from './Categories';
 import Home from './Home';
+import Posts from './Posts';
 
 export default function Dashboard() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -25,6 +26,7 @@ export default function Dashboard() {
             <Route path="/users/:userId" element={<UserDetail />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/plans" element={<Plans />} />
+            <Route path="/posts" element={<Posts />} />
           </Routes>
         </main>
       </div>
