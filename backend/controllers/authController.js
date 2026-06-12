@@ -6,6 +6,7 @@ const nodemailer = require('nodemailer');
 
 const User = require('../models/User');
 const Transaction = require('../models/Transaction');
+const UserInvestment = require('../models/UserInvestment');
 
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE || 'gmail',
@@ -262,72 +263,101 @@ const getUserDashboardStats = async (req, res) => {
     try {
       const userId = req.user.id;
 
-      const stats = await Transaction.aggregate([
-        {
-          $match: {
-            user: new mongoose.Types.ObjectId(userId),
+      const [stats, investments] = await Promise.all([
+        Transaction.aggregate([
+          {
+            $match: {
+              user: new mongoose.Types.ObjectId(userId),
+            },
           },
-        },
-        {
-          $facet: {
-            totalDepositsApproved: [
-              {
-                $match: {
-                  type: 'Deposit',
-                  status: { $in: ['approved', 'Approved'] },
-                  transactionId: { $not: /^ROI-DAILY-/ },
+          {
+            $facet: {
+              totalDepositsApproved: [
+                {
+                  $match: {
+                    type: 'Deposit',
+                    status: { $in: ['approved', 'Approved'] },
+                    transactionId: { $not: /^ROI-DAILY-/ },
+                  },
                 },
-              },
-              {
-                $group: {
-                  _id: null,
-                  total: { $sum: '$amount' },
+                {
+                  $group: {
+                    _id: null,
+                    total: { $sum: '$amount' },
+                  },
                 },
-              },
-            ],
-            totalWithdrawalsProcessed: [
-              {
-                $match: {
-                  type: 'Withdrawal',
-                  status: { $in: ['approved', 'Approved', 'withdrawn', 'Withdrawn'] },
+              ],
+              totalWithdrawalsProcessed: [
+                {
+                  $match: {
+                    type: 'Withdrawal',
+                    status: { $in: ['approved', 'Approved', 'withdrawn', 'Withdrawn'] },
+                  },
                 },
-              },
-              {
-                $group: {
-                  _id: null,
-                  total: { $sum: '$amount' },
+                {
+                  $group: {
+                    _id: null,
+                    total: { $sum: '$amount' },
+                  },
                 },
-              },
-            ],
-            totalROIEarnings: [
-              {
-                $match: {
-                  type: 'Deposit',
-                  transactionId: /^ROI-DAILY-/,
+              ],
+              totalROIEarnings: [
+                {
+                  $match: {
+                    type: 'Deposit',
+                    transactionId: /^ROI-DAILY-/,
+                  },
                 },
-              },
-              {
-                $group: {
-                  _id: null,
-                  total: { $sum: '$amount' },
+                {
+                  $group: {
+                    _id: null,
+                    total: { $sum: '$amount' },
+                  },
                 },
-              },
-            ],
+              ],
+            },
           },
-        },
+        ]),
+        UserInvestment.find({ user: userId, status: 'active' }).select('investmentAmount'),
       ]);
 
       const summary = stats[0] || {};
+      const totalInvestment = investments.reduce((sum, inv) => sum + inv.investmentAmount, 0);
 
       return res.status(200).json({
         message: 'Dashboard stats fetched successfully',
         totalDepositsApproved: summary.totalDepositsApproved?.[0]?.total || 0,
         totalWithdrawalsApproved: summary.totalWithdrawalsProcessed?.[0]?.total || 0,
         totalROIEarnings: summary.totalROIEarnings?.[0]?.total || 0,
+        totalInvestment,
       });
     } catch (error) {
       console.error('Dashboard stats calculation failed:', error.message);
       return res.status(500).json({ message: error.message || 'Unable to fetch dashboard stats' });
+    }
+  };
+
+const getUserInvestments = async (req, res) => {
+    try {
+      const userId = req.user.id;
+
+      const investments = await UserInvestment.find({ user: userId })
+        .populate('plan', 'name dailyReturnRate minInvestment maxInvestment description')
+        .populate('category', 'name')
+        .sort({ createdAt: -1 });
+
+      const totalInvestment = investments
+        .filter(inv => inv.status === 'active')
+        .reduce((sum, inv) => sum + inv.investmentAmount, 0);
+
+      return res.status(200).json({
+        message: 'User investments fetched successfully',
+        investments,
+        totalInvestment,
+      });
+    } catch (error) {
+      console.error('Failed to fetch user investments:', error.message);
+      return res.status(500).json({ message: error.message || 'Unable to fetch user investments' });
     }
   };
 
@@ -340,4 +370,5 @@ module.exports = {
   verifyOtp,
   resetPassword,
   getUserDashboardStats,
+  getUserInvestments,
 };

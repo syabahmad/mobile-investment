@@ -57,7 +57,7 @@ export const walletApi = {
   withdraw: (data: { amount: number; targetPhone: string }) =>
     api.post<{ message: string; transaction: Transaction; currentBalance: number }>('/wallet/withdraw', data),
 
-  selectPlan: (data: { planName: string }) =>
+  selectPlan: (data: { planId: string; amount?: number }) =>
     api.post<{ message: string; activePlan: string }>('/wallet/select-plan', data),
 
   getTransactions: () =>
