@@ -76,7 +76,7 @@ export const authApi = {
   verifyOtp: (data: { email: string; otp: string }) =>
     api.post<{ message: string; resetToken: string }>('/auth/verify-otp', data),
 
-  resetPassword: (data: { email: string; resetToken: string; newPassword?: string }) =>
+  resetPassword: (data: { email: string; resetToken: string; newPassword: string }) =>
     api.post<{ message: string }>('/auth/reset-password', data),
 
   getProfile: () =>

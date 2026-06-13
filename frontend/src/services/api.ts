@@ -12,7 +12,7 @@ export const setAuthTokenProvider = (provider: AuthTokenProvider): void => {
 
 const api: AxiosInstance = axios.create({
   baseURL: appConfig.apiBaseUrl,
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },

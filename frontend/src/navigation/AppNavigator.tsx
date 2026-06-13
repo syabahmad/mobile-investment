@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, SafeAreaView, StyleSheet, Text, View } fr
 import { useAuth } from '../context/AuthContext';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import PlanSelectionScreen from '../screens/PlanSelectionScreen';
 import TermsConditionScreen from '../screens/TermsConditionScreen';
 import DashboardScreen from '../screens/DashboardScreen';
@@ -20,6 +21,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 export type RootStackParamList = {
   Login: { email?: string; password?: string } | undefined;
   Register: undefined;
+  ForgotPassword: { email?: string } | undefined;
   PlanSelection: undefined;
   Systems: undefined;
   SystemPlans: { system?: any; systemId?: string } | undefined;
@@ -92,7 +94,14 @@ function BottomTabs() {
         return (
           <Pressable
             key={tab.key}
-            onPress={() => navigation.navigate(tab.route)}
+            onPress={() => {
+              if (routeName === tab.route) return;
+
+              navigation.reset({
+                index: 0,
+                routes: [{ name: tab.route }],
+              });
+            }}
             style={({ pressed }) => [styles.tabItem, pressed && styles.tabItemPressed]}
           >
             <View style={[styles.tabIconWrap, focused && styles.tabIconWrapActive]}>
@@ -151,6 +160,7 @@ export default function AppNavigator() {
     >
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
       <Stack.Screen name="MainTabs" component={MainTabs} options={{ gestureEnabled: false }} />
     </Stack.Navigator>
   );

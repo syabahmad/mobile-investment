@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { AxiosError } from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -24,6 +25,7 @@ import ErrorModal from '../components/ErrorModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 import InfoModal from '../components/InfoModal';
 import { InvestmentSystem } from '../services/api/walletApi';
+import type { RootStackParamList } from '../navigation/AppNavigator';
 
 interface UserProfileResponse {
   user: {
@@ -84,7 +86,7 @@ interface ApiError {
 
 export default function DashboardScreen() {
   const { logout } = useAuth();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { height: screenHeight } = useWindowDimensions();
   
   // Detects shorter screen forms dynamically
@@ -188,8 +190,18 @@ export default function DashboardScreen() {
 
   const handleOpenSettings = () => {
     setMenuVisible(false);
-    navigation.navigate('Settings' as never);
+    openDashboardChild('Settings');
   };
+
+  const openDashboardChild = useCallback(
+    (routeName: 'Settings' | 'DepositRequest' | 'WithdrawalRequest' | 'Systems') => {
+      navigation.reset({
+        index: 1,
+        routes: [{ name: 'Dashboard' }, { name: routeName }],
+      });
+    },
+    [navigation]
+  );
 
   const handleOpenMenu = () => {
     setMenuVisible(true);

@@ -106,6 +106,13 @@ export default function LoginScreen() {
             />
           </View>
 
+          <Pressable
+            onPress={() => navigation.navigate('ForgotPassword', { email: email.trim().toLowerCase() })}
+            style={styles.forgotPasswordRow}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+          </Pressable>
+
           <Pressable disabled={isLoading} onPress={handleLogin} style={[styles.button, isLoading && styles.buttonDisabled]}>
             {isLoading ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.buttonText}>Login</Text>}
           </Pressable>
@@ -171,7 +178,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   button: {
-    marginTop: 8,
+    marginTop: 12,
     borderRadius: 10,
     backgroundColor: '#0EA5E9',
     paddingVertical: 13,
@@ -197,6 +204,16 @@ const styles = StyleSheet.create({
   },
   signUpLink: {
     color: '#0EA5E9',
+    fontWeight: '700',
+  },
+  forgotPasswordRow: {
+    alignItems: 'flex-end',
+    marginTop: -4,
+    marginBottom: 2,
+  },
+  forgotPasswordText: {
+    color: '#0EA5E9',
+    fontSize: 13,
     fontWeight: '700',
   },
 });
