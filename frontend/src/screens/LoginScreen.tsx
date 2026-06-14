@@ -52,8 +52,11 @@ export default function LoginScreen() {
 
       await login(token, normalizedUser);
 
-      // Always navigate to Dashboard after login; plan selection is reachable from Dashboard.
-      navigation.navigate('Dashboard' as never);
+      // Enter the main tab navigator after login so Home, Community, Analysis, Settings, and Profile are available.
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainTabs' as never }],
+      });
     } catch (error) {
       const axiosError = error as AxiosError<{ message?: string }>;
       const message = axiosError.response?.data?.message || 'Something went wrong';
@@ -102,6 +105,13 @@ export default function LoginScreen() {
               value={password}
             />
           </View>
+
+          <Pressable
+            onPress={() => navigation.navigate('ForgotPassword', { email: email.trim().toLowerCase() })}
+            style={styles.forgotPasswordRow}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+          </Pressable>
 
           <Pressable disabled={isLoading} onPress={handleLogin} style={[styles.button, isLoading && styles.buttonDisabled]}>
             {isLoading ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.buttonText}>Login</Text>}
@@ -168,7 +178,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   button: {
-    marginTop: 8,
+    marginTop: 12,
     borderRadius: 10,
     backgroundColor: '#0EA5E9',
     paddingVertical: 13,
@@ -194,6 +204,16 @@ const styles = StyleSheet.create({
   },
   signUpLink: {
     color: '#0EA5E9',
+    fontWeight: '700',
+  },
+  forgotPasswordRow: {
+    alignItems: 'flex-end',
+    marginTop: -4,
+    marginBottom: 2,
+  },
+  forgotPasswordText: {
+    color: '#0EA5E9',
+    fontSize: 13,
     fontWeight: '700',
   },
 });

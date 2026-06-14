@@ -36,6 +36,31 @@ export interface DashboardStats {
   totalDepositsApproved: number;
   totalWithdrawalsApproved: number;
   totalROIEarnings: number;
+  totalInvestment: number;
+}
+
+export interface UserInvestment {
+  _id: string;
+  user: string;
+  plan: {
+    _id: string;
+    name: string;
+    dailyReturnRate: number;
+    minInvestment: number;
+  };
+  category: {
+    _id: string;
+    name: string;
+  };
+  investmentAmount: number;
+  dailyReturnRate: number;
+  status: 'active' | 'completed' | 'cancelled';
+  createdAt: string;
+}
+
+export interface InvestmentsResponse {
+  investments: UserInvestment[];
+  totalInvestment: number;
 }
 
 export const authApi = {
@@ -51,7 +76,7 @@ export const authApi = {
   verifyOtp: (data: { email: string; otp: string }) =>
     api.post<{ message: string; resetToken: string }>('/auth/verify-otp', data),
 
-  resetPassword: (data: { email: string; resetToken: string; newPassword?: string }) =>
+  resetPassword: (data: { email: string; resetToken: string; newPassword: string }) =>
     api.post<{ message: string }>('/auth/reset-password', data),
 
   getProfile: () =>
@@ -62,4 +87,7 @@ export const authApi = {
 
   getDashboardStats: () =>
     api.get<DashboardStats>('/auth/dashboard-stats'),
+
+  getInvestments: () =>
+    api.get<InvestmentsResponse>('/auth/investments'),
 };

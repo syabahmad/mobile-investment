@@ -28,7 +28,7 @@ export default function TermsConditionScreen() {
   const handleToggleAgree = useCallback(() => setHasAgreed((v) => !v), []);
 
   const handleContinue = useCallback(() => {
-    if (!hasAgreed || !selectedPlanId || !selectedPlanName) {
+    if (!hasAgreed || !selectedPlanId) {
       return;
     }
 
@@ -36,8 +36,8 @@ export default function TermsConditionScreen() {
       setSubmitting(true);
 
       try {
-        await walletApi.selectPlan({ planName: selectedPlanName });
-        navigation.replace('Dashboard');
+        await walletApi.selectPlan({ planId: selectedPlanId });
+        navigation.goBack();
       } catch (error) {
         Alert.alert(
           'Plan Selection Failed',
@@ -49,7 +49,7 @@ export default function TermsConditionScreen() {
     };
 
     void commitPlanSelection();
-  }, [hasAgreed, navigation, selectedPlanId, selectedPlanName]);
+  }, [hasAgreed, navigation, selectedPlanId]);
 
   return (
     <SafeAreaView style={[styles.container, { paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 0 }]}>

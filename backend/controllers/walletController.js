@@ -2,6 +2,8 @@ const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const Plan = require('../models/Plan');
 const InvestmentCategory = require('../models/InvestmentCategory');
+const UserInvestment = require('../models/UserInvestment');
+const { createAdminNotification } = require('./notificationsController');
 
 const submitDeposit = async (req, res) => {
   try {
@@ -22,6 +24,19 @@ const submitDeposit = async (req, res) => {
       transactionId,
       status: 'pending',
     });
+
+    // Notify admin that a deposit was requested
+    try {
+      const user = await User.findById(req.user.id).select('email');
+      await createAdminNotification({
+        title: 'New Deposit Requested',
+        message: `Deposit request submitted (TID: ${transactionId}, Amount: ${amount}).`,
+        meta: { transactionId, amount, userId: req.user.id, userEmail: user?.email },
+      });
+    } catch (e) {
+      // notification failure shouldn't block user flow
+      console.error('Failed to create admin notification (deposit):', e.message);
+    }
 
     return res.status(201).json({ message: 'Deposit submitted successfully. Waiting for admin approval.', transaction });
   } catch (error) {
@@ -52,6 +67,17 @@ const requestWithdrawal = async (req, res) => {
       status: 'pending',
     });
 
+    // Notify admin that a withdrawal was requested
+    try {
+      await createAdminNotification({
+        title: 'New Withdrawal Requested',
+        message: `Withdrawal request submitted (Amount: ${amount}).`,
+        meta: { amount, targetPhone, userId: req.user.id, userEmail: user?.email },
+      });
+    } catch (e) {
+      console.error('Failed to create admin notification (withdrawal):', e.message);
+    }
+
     return res.status(201).json({ message: 'Withdrawal requested successfully. Awaiting admin processing.', transaction, currentBalance: user.currentBalance });
   } catch (error) {
     return res.status(500).json({ message: error.message || 'Withdrawal request failed' });
@@ -60,23 +86,45 @@ const requestWithdrawal = async (req, res) => {
 
 const selectPlan = async (req, res) => {
   try {
-    const { planName } = req.body;
-    if (!planName) {
-      return res.status(400).json({ message: 'planName is required' });
+    const { planId, amount } = req.body;
+    
+    if (!planId) {
+      return res.status(400).json({ message: 'planId is required' });
     }
 
-    if (planName !== 'None') {
-      const plan = await Plan.findOne({ name: planName, isActive: true });
-      if (!plan) {
-        return res.status(400).json({ message: 'Invalid or inactive plan' });
-      }
+    const plan = await Plan.findById(planId).populate('category', 'name');
+    if (!plan) {
+      return res.status(400).json({ message: 'Invalid or inactive plan' });
     }
 
     const user = await User.findById(req.user.id);
-    user.activePlan = planName;
+    
+    // If amount is provided, create a UserInvestment record
+    if (typeof amount === 'number' && amount > 0) {
+      const existingInvestment = await UserInvestment.findOne({ user: req.user.id, plan: planId });
+      
+      if (existingInvestment) {
+        // Update existing investment
+        existingInvestment.investmentAmount += amount;
+        existingInvestment.status = 'active';
+        await existingInvestment.save();
+      } else {
+        // Create new investment
+        await UserInvestment.create({
+          user: req.user.id,
+          plan: planId,
+          category: plan.category._id,
+          investmentAmount: amount,
+          dailyReturnRate: plan.dailyReturnRate,
+          status: 'active',
+        });
+      }
+    }
+
+    user.activePlan = plan.name;
     await user.save();
 
-    return res.status(200).json({ message: `Successfully subscribed to ${planName}`, activePlan: user.activePlan });
+    return res.status(200).json({ message: `Successfully subscribed to ${plan.name}`, activePlan: user.activePlan });
   } catch (error) {
     return res.status(500).json({ message: error.message || 'Plan selection failed' });
   }
